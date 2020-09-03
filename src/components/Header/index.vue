@@ -59,12 +59,13 @@
     },
     methods:{
       toSearch(){
+        //   console.log(111)
         // this.$router.push(`/search/${this.keyword}?keyword=${this.keyword.toUpperCase()}`)
         //不可以用path和params配置的组合，只能用name和params配置的组合
         //query配置可以与path或name进行组合使用
         this.$router.push({
           // path:'/search',
-          name:'search',
+          name:"search",
           query:{
             keyword1:this.keyword.toUpperCase()
           },
@@ -73,6 +74,7 @@
             keyword:this.keyword || undefined
           }
         })
+        // console.log(222)
       }
     }
   }

@@ -1,15 +1,16 @@
 <template>
   <div>
-    Search <br>
+    <!-- Search <br> -->
     <!-- params参数：{{$route.params.keyword}}---query参数：{{$route.query.keyword}} -->
-    params参数：{{keyword}}---query参数：{{keyword1}}
+    <!-- params参数：{{keyword}}---query参数：{{keyword1}} -->
+    <TypeNav></TypeNav>
   </div>
 </template>
 
 <script>
   export default {
     name:'Search',
-    props:['keyword','keyword1']
+    props:['keyword','keyword1'],
   }
 </script>
 

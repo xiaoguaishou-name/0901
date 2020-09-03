@@ -10,16 +10,22 @@ export default [
     },
     {
       path:'/login',
-      component:Login
+      component:Login,
+      meta:{
+        isHide:true
+      }
     },
     {
       path:'/register',
-      component:Register
+      component:Register,
+      meta:{
+        isHide:true
+      }
     },
     {
       path:'/search/:keyword?',
       component:Search,
-      name:'search',
+      name:"search",
       props:route => ({keyword:route.params.keyword,keyword1:route.query.keyword1})
     },
     {
