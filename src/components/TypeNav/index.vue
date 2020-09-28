@@ -1760,6 +1760,7 @@ export default {
       let data = event.target.dataset;
       // 解构
       let { categoryname, category1id, category2id, category3id } = data;
+      console.log(categoryname,category1id, category2id, category3id )
       if (categoryname) {
         let location = {
           name: "search",

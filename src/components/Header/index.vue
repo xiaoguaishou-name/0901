@@ -63,18 +63,28 @@
         // this.$router.push(`/search/${this.keyword}?keyword=${this.keyword.toUpperCase()}`)
         //不可以用path和params配置的组合，只能用name和params配置的组合
         //query配置可以与path或name进行组合使用
-        this.$router.push({
-          // path:'/search',
-          name:"search",
-          query:{
-            keyword1:this.keyword.toUpperCase()
-          },
-          params:{
-            // 如果传递params参数是一个空串，那么路径就会有问题，如果是undefined就没事
-            keyword:this.keyword || undefined
-          }
-        })
+        // this.$router.push({
+        //   // path:'/search',
+        //   name:"search",
+        //   query:{
+        //     keyword1:this.keyword.toUpperCase()
+        //   },
+        //   params:{
+        //     // 如果传递params参数是一个空串，那么路径就会有问题，如果是undefined就没事
+        //     keyword:this.keyword || undefined
+        //   }
+        // })
         // console.log(222)
+        let location = {
+          name:'search',
+          params:{keyword:this.keyword || undefined}
+        }
+        let {query} = this.$route
+        if(query){
+          location.query = query
+        }
+        this.keyword = ''
+        this.$router.push(location)
       }
     }
   }
