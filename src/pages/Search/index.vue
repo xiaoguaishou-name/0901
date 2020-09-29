@@ -38,8 +38,12 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active:sortFlag === '1'}">
+                  <a href="javascript:;" @click="sortGoods('1')">
+                    综合
+                    <i class="iconfont" :class="{iconup:sortType === 'asc',icondown:sortType === 'desc'}"
+                    v-if="sortFlag === '1'"></i>
+                  </a>
                 </li>
                 <li>
                   <a href="#">销量</a>
@@ -50,12 +54,16 @@
                 <li>
                   <a href="#">评价</a>
                 </li>
-                <li>
-                  <a href="#">价格⬆</a>
+                <li :class="{active:sortFlag === '2'}">
+                  <a href="javascript:;" @click="sortGoods('2')">
+                    价格
+                    <i class="iconfont" :class="{iconup:sortType === 'asc',icondown:sortType === 'desc'}"
+                    v-if="sortFlag === '2'"></i>
+                  </a>
                 </li>
-                <li>
+                <!-- <li>
                   <a href="#">价格⬇</a>
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -103,33 +111,12 @@
             </ul>
           </div>
           <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
+            <Pagination
+            :currentPageNum="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="goodsListInfo.total"
+            :continueNum="5"
+            @changePage="changePage"></Pagination>
           </div>
         </div>
       </div>
@@ -138,7 +125,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
@@ -202,16 +189,24 @@ export default {
     removeCategoryName(){
       this.searchParams.categoryName = ''
       // this.getGoodsListInfo()
-      this.$router.push({name:'search',params:this.$route.params})
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug9
+      this.searchParams.pageNo = 1
+      // 修改在搜索页多次跳转后点击回退不能一次返回home的bug
+      this.$router.replace({name:'search',params:this.$route.params})
     },
     // 删除面包屑关键字
     removeKeyword(){
       this.searchParams.keyword = ''
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug
+      this.searchParams.pageNo = 1
       // this.getGoodsListInfo()
-      this.$router.push({name:'search',query:this.$route.query})
+      // 修改在搜索页多次跳转后点击回退不能一次返回home的bug
+      this.$router.replace({name:'search',query:this.$route.query})
     },
     // 品牌搜索点击回调
     searchForTrademark(trademark){
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug
+      this.searchParams.pageNo = 1
       // 注意参数格式，以api文档为准
       this.searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`
       this.getGoodsListInfo()
@@ -219,21 +214,54 @@ export default {
     // 删除品牌面包屑回调
     removeTrademark(){
       this.searchParams.trademark = ''
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug
+      this.searchParams.pageNo = 1
       this.getGoodsListInfo()
     },
     // 点击属性回调
     searchForAttr(attr,attrValue){
       this.searchParams.props.push(`${attr.attrId}:${attrValue}:${attr.attrName}`)
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug
+      this.searchParams.pageNo = 1
       this.getGoodsListInfo()
     },
     // 删除属性回调
     removeProp(index){
       this.searchParams.props.splice(index,1)
+      // 解决改变搜索条件后当前页没有高亮状态现实的bug
+      this.searchParams.pageNo = 1
+      this.getGoodsListInfo()
+    },
+    // 点击排序回调
+    sortGoods(sortFlag){
+      let originFlag = this.sortFlag
+      let originType = this.sortType
+      let newOrder
+      if(sortFlag === originFlag){
+        newOrder = `${sortFlag}:${originType === 'desc'?'asc':'desc'}`
+      }else{
+        newOrder = `${sortFlag}:desc`
+      }
+      this.searchParams.order = newOrder
+      this.getGoodsListInfo()
+    },
+    // 点击分页回调
+    changePage(num){
+      this.searchParams.pageNo = num
       this.getGoodsListInfo()
     }
   },
   computed: {
+    ...mapState({
+      goodsListInfo:state=>state.search.goodsListInfo
+    }),
     ...mapGetters(["goodsList"]),
+    sortFlag(){
+      return this.searchParams.order.split(':')[0]
+    },
+    sortType(){
+      return this.searchParams.order.split(':')[1]
+    }
   },
   watch:{
     $route(){
@@ -490,11 +518,12 @@ export default {
       }
 
       .page {
-        width: 733px;
-        height: 66px;
-        overflow: hidden;
+        // width: 733px;
+        // height: 66px;
+        // line-height: 66px;
+        // overflow: hidden;
         float: right;
-
+        margin-bottom:20px;
         .sui-pagination {
           margin: 18px 0;
 

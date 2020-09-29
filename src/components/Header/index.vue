@@ -84,7 +84,12 @@
           location.query = query
         }
         this.keyword = ''
-        this.$router.push(location)
+        // 修改在搜索页多次跳转后点击回退不能一次返回home的bug
+        if(this.$route.path !== '/home'){
+          this.$router.replace(location)
+        }else{
+          this.$router.push(location);
+        }
       }
     }
   }
